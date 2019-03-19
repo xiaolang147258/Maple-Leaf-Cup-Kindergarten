@@ -37,7 +37,8 @@
       	  <input v-model="inp_val" @blur="git_search" @focus="inp_show=false" type="text" id="inp" />
       	  <img @click="inp_fl" v-show="inp_show" src="../../../static/img/sousuo.png" alt="" /><p @click="inp_fl" v-show="inp_show">搜索学生姓名</p>
       </div>
-      
+     
+     <div class="yin_s2_f">
       <div class="yin_s2">
       	  <div class="yin_s2_box">
       	  	  <div class="yin_s2_box_c1">
@@ -52,9 +53,7 @@
       	  	     </div> 
       	  	  </div>
       	  	  <div class="xian"></div>
-      	  	  
       	  	   <div class="xuan_xiang_box">
-      	  	   	
       	  	   	 <div v-for="(i,index) in active_box" class="xuan_xiang_box_c" @click="go_vdet(i)">
       	  	   	 	  <div class="img_box_s"><img :src="'http://video-mp.cieo.com.cn/'+i.image"/>
       	  	   	 	    <div class="img_btn">{{i.number}}号</div></div>
@@ -62,12 +61,13 @@
       	  	   	 	  <p class="xuexiao">{{i.school}}</p>
       	  	   	 	  <p class="p_img"><img src="../../../static/img/aixin.png" /> &nbsp;<a>{{i.votes}}票</a></p>
       	  	   	 </div>
-      	  	   	
       	  	   </div>
-      	  	  
       	  </div>
       </div>
-      
+    </div> 
+     
+     
+     
       <van-popup v-model="show1s"><van-loading type="spinner" /></van-popup>
       
   </div>
@@ -86,11 +86,8 @@ export default {
     	inp_show:true,
     	show_btn:0,
     	index_box:'',//基础信息
-    	shi:{
-    		d:0,h:0,m:0,s:0
-    	},
+    	shi:{d:0,h:0,m:0,s:0},
     	isEnd:false,
-    	
     	page:1,//页数
     	limit:10,//条数
     	inp_val:'',
@@ -269,7 +266,7 @@ export default {
         	    	 if(res.status = 200){
         	    	 	   console.log(res.data.data);
         	    	 	   localStorage.token = res.data.data
-        	    	 	   window.location.href = 'http://video-mp.cieo.com.cn/wechat/login?token='+localStorage.token
+        	    	 	   window.location.href = '/wechat/login?token='+localStorage.token
         	    	 }
                 }).catch(err=>{
                 	 console.log(err);
@@ -283,7 +280,7 @@ export default {
   		  router.push({
   	   	 path:'./Video_details'
   	   });
-	   window.location.reload()
+//	   window.location.reload()
   	},
   	
   	inp_fl(){
@@ -325,6 +322,7 @@ export default {
   	},
   },
   mounted(){
+// localStorage.token = '4d5ffe565a9fff55bd7c8c21d70738b0' 
 	 if(localStorage.token&&localStorage.token!=''){
 	 	   console.log(localStorage.token)
 	 }else{
@@ -334,8 +332,6 @@ export default {
       this.git_recommend();
       this.git_shai();
       
-//	  localStorage.token = '2c53321185189e3320c83693a48f4b09' 
-  	
 //	   document.getElementById('hello').style.height = document.documentElement.clientHeight;
   	   this.$store.state.btn_show = true;
   	   this.$store.state.bottom_1 = true;
@@ -531,7 +527,19 @@ opacity:1;
 		 z-index: 1;
 		 padding: 0.213333rem 0;
 		 float: left;
-		 margin-left: 0.72rem;
+		 /*margin-left: 0.72rem;*/
+	}
+	
+	.yin_s2_f{
+		width: 8.56rem;
+		/*height:6.666666rem;*/
+		margin:0 auto;
+		background: #FFADB4;
+		border-radius:0.266666rem;
+		position: relative;
+		z-index: 1;
+		
+		 
 	}
 	
 	.img_box_2 p{

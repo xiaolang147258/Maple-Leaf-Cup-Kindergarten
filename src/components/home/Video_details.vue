@@ -30,7 +30,7 @@
       	  	 	  {{active.content}}
       	  	 </div>
       	  	 <div class="btn_box">
-      	  	  <div @click="zhi_click(1)" style="background:#FF6F7A;float: left;">为他/她投一票(+1)</div>
+      	  	  <div @click="zhi_click_1(1)" style="background:#FF6F7A;float: left;">为他/她投一票(+1)</div>
       	  	  <div @click="zhi_click(10)" style="background:#4DB1E5;float: right;">大力支持他/她(+10)</div>
       	     </div>
       	  </div>
@@ -122,8 +122,8 @@ export default {
         	    	 	  	  console.log(res.data.data,'详情数据');
         	    	 	  	  this.active = res.data.data
         	    	 	  	  window.setTimeout(()=>{//加载视频
-        	    	 	  	  	 var url = 'http://video-mp.cieo.com.cn/'+this.active.url;
-        	    	 	  	  	 var img = 'http://video-mp.cieo.com.cn/'+this.active.image
+        	    	 	  	  	 var url = 'http://video-vote.cieo.com.cn/'+this.active.url;
+        	    	 	  	  	 var img = 'http://video-vote.cieo.com.cn/'+this.active.image
                                    this.$refs.video.src = url;
                                    this.urlsa = img
 //              	             };
@@ -181,7 +181,6 @@ export default {
         	                       duration:3000
         	                 });
              });
- 
   	},
   	git_iphone(){//检测用户是否完善信息
   		 axios.get('isPerfect?token='+localStorage.token
@@ -204,15 +203,8 @@ export default {
               }); 
   	},
   	
-  	
-  	zhi_click(i){//用户点击支持按钮
-  		if(this.xinxi==0){//未绑定手机号
-  		 	   this.show4 = true;//弹出绑定手机-输入框
-//		 	   this.show5 = true;//弹出-支持结果-提示框
-//			   this.show5_s = false;//支持成功=true/支持失败=false
-  		 }else{
-  		 	   var a = i==10?10:''
-  		 	   axios.get('vote?token='+localStorage.token+'&id='+localStorage.video_id+'&support='+a
+  	zhi_click_1(i){//用户点击支持按钮
+  		 	   axios.get('vote?token='+localStorage.token+'&id='+localStorage.video_id+'&support=""'
         	    ).then(res=>{
         	    	 if(res.status = 200){
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
@@ -222,12 +214,56 @@ export default {
   	                    });
         	    	 	  }else{
         	    	 	  	 console.log(res.data,'投票');
-        	    	 	  	  this.show5 = true;
+        	    	 	  	  
         	    	 	  	 if(res.data.status==0){
+        	    	 	  	 	   this.show5 = true;
 		 	                      this.show5_s=true;//支持成功=true/支持失败=false;
-		 	                      this.hel_click(1);
+		 	                      this.git_active()
         	    	 	  	 }else if(res.data.status==106){
+        	    	 	  	 	   this.show5 = true;
         	    	 	  	 	    this.show5_s=false;
+        	    	 	  	 }else if(res.data.status==111){//活动结束
+        	    	 	  	 	    this.$toast({
+        	                       message:res.data.data,
+        	                       duration:3000
+        	                 });
+        	    	 	  	 }
+        	    	 	  }
+        	    	 }
+                }).catch(err=>{
+                	 console.log(err)
+              }); 
+  		
+  	},
+  	zhi_click(i){//用户点击支持按钮
+  		if(this.xinxi==0){//未绑定手机号
+  		 	   this.show4 = true;//弹出绑定手机-输入框
+//		 	   this.show5 = true;//弹出-支持结果-提示框
+//			   this.show5_s = false;//支持成功=true/支持失败=false
+  		}else{
+  		 	   axios.get('vote?token='+localStorage.token+'&id='+localStorage.video_id+'&support=10'
+        	    ).then(res=>{
+        	    	 if(res.status = 200){
+        	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
+        	    	 	  	  localStorage.token = '';
+        	    	 	  	  router.push({
+  	   	                    path:'./home',
+  	                    });
+        	    	 	  }else{
+        	    	 	  	 console.log(res.data,'投票');
+        	    	 	  	  
+        	    	 	  	 if(res.data.status==0){
+        	    	 	  	 	    this.show5 = true;
+		 	                      this.show5_s=true;//支持成功=true/支持失败=false;
+		 	                      this.git_active()
+        	    	 	  	 }else if(res.data.status==106){
+        	    	 	  	 	    this.show5 = true;
+        	    	 	  	 	    this.show5_s=false;
+        	    	 	  	 }else if(res.data.status==111){//活动结束
+        	    	 	  	 	    this.$toast({
+        	                       message:res.data.data,
+        	                       duration:3000
+        	                 });
         	    	 	  	 }
         	    	 	  }
         	    	 }
@@ -263,6 +299,10 @@ export default {
       let win_height = document.documentElement.clientHeight;
       let hel_height = document.getElementById('hello');
       hel_height.style.minHeight = win_height+'px';
+      
+      window.setTimeout(()=>{
+	  	     document.getElementById('hello').style.minHeight = document.documentElement.clientHeight+'px';
+	    },500)
       
 //  window.setTimeout(()=>{
 //  	  this.hellos_show = hel_height<win_height?true:false;
@@ -580,11 +620,14 @@ color: white;
 		font-size: 0.48rem;
 		float: left;
 		line-height: 0.666666rem;
+		max-width:70%;
+		overflow: hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 	}
 	.video_1_box_c1_p{
-		width: 50%;
+		width: 75%;
 		height: 0.666666rem;
-		
 		
 	}
 	.video_1_box_c1{

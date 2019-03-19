@@ -1,6 +1,6 @@
 <template>
   <!--上传视频-->
-  <div id="hello" style="width:100%;background:#F8515E;padding:0.266666rem 0;" :class="{hellos:class_show}">
+  <div id="hello" style="width:100%;background:#F8515E;padding:0.266666rem 0;">
      
      <img class="left_inf" src="../../../static/img/fengye.png" alt="" />
       <img class="left_inf2" src="../../../static/img/fengye_a.png" alt="" />
@@ -97,7 +97,7 @@
      	  	  	 	  	  	  </div>
      	  	  	 	  	  </div>
      	  	  	 	  	  <div class="video_btn_box">
-     	  	  	 	  	  	  <div @click="zhici(i,1)" style="background:#FF6F7A;margin-bottom: 0.426666rem;">投票(+1)</div>
+     	  	  	 	  	  	  <div @click="zhici_1(i,1)" style="background:#FF6F7A;margin-bottom: 0.426666rem;">投票(+1)</div>
      	  	  	 	  	  	  <div @click="zhici(i,10)" style="background:#4DB1E5;">大力支持(+10)</div>
      	  	  	 	  	  </div> 
      	  	  	 	  </div>
@@ -135,7 +135,7 @@
           	 	   <input v-model="iphones" style="margin-top:0.266666rem;" @blur="to_top" class="iphone_s_box_inp" type="number" pattern="\d*" name="number" placeholder="请输入手机号" />
           	     <div class="iphone_s_box_p_box"><img src="../../../static/img/upimg/tishi.png"/><p>首次上传视频需完善个人信息</p></div>
           	     <div class="btn_boxs">
-          	     	   <div @click="show4=false" style="background:rgba(255,223,99,1);float:left;color:#666666;" class="btn_boxsbtn">考虑一下</div>
+          	     	   <div @click="kaolv" style="background:rgba(255,223,99,1);float:left;color:#666666;" class="btn_boxsbtn">考虑一下</div>
           	     	   <div @click="iphone_bao_cun" style="background:#4DB1E5;float: right;" class="btn_boxsbtn">保存</div>
           	     </div>
           	 </div>
@@ -246,12 +246,14 @@ export default {
     }
   },
   methods:{
-  	zhici(i,index){
-  		 if(this.xinxi==0){//未绑定手机号
-  		 	   this.show4=true;
-  		 }else{
-  		 	   var a = index==10?10:''
-  		 	   axios.get('vote?token='+localStorage.token+'&id='+i.id+'&support='+a
+  	kaolv(){
+  		router.push({
+  	   	 path:'./home',
+  	   });
+  	},
+  	
+  	zhici_1(i,index){//普通投票
+  		 	   axios.get('vote?token='+localStorage.token+'&id='+i.id+'&support=""'
         	    ).then(res=>{
         	    	 if(res.status = 200){
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
@@ -261,12 +263,55 @@ export default {
   	                    });
         	    	 	  }else{
         	    	 	  	 console.log(res.data,'投票');
-        	    	 	  	  this.show6 = true;
+        	    	 	  	  
         	    	 	  	 if(res.data.status==0){
+        	    	 	  	 	    this.show6 = true;
 		 	                      this.show5_s=true;//支持成功=true/支持失败=false;
 		 	                      this.hel_click(1);
         	    	 	  	 }else if(res.data.status==106){
+        	    	 	  	 	    this.show6 = true;
         	    	 	  	 	    this.show5_s=false;
+        	    	 	  	 }else if(res.data.status==111){//活动结束
+        	    	 	  	 	    this.$toast({
+        	                       message:res.data.data,
+        	                       duration:3000
+        	                 });
+        	    	 	  	 }
+        	    	 	  }
+        	    	 }
+                }).catch(err=>{
+                	 console.log(err)
+              }); 
+  		   
+  	},
+  	
+  	zhici(i,index){
+  		 if(this.xinxi==0){//未绑定手机号
+  		 	   this.show4=true;
+  		 }else{
+  		 	   axios.get('vote?token='+localStorage.token+'&id='+i.id+'&support=10'
+        	    ).then(res=>{
+        	    	 if(res.status = 200){
+        	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
+        	    	 	  	  localStorage.token = '';
+        	    	 	  	  router.push({
+  	   	                    path:'./home',
+  	                    });
+        	    	 	  }else{
+        	    	 	  	 console.log(res.data,'投票');
+        	    	 	  	  
+        	    	 	  	 if(res.data.status==0){
+        	    	 	  	 	    this.show6 = true;
+		 	                      this.show5_s=true;//支持成功=true/支持失败=false;
+		 	                      this.hel_click(1);
+        	    	 	  	 }else if(res.data.status==106){
+        	    	 	  	 	    this.show6 = true;
+        	    	 	  	 	    this.show5_s=false;
+        	    	 	  	 }else if(res.data.status==111){//活动结束
+        	    	 	  	 	    this.$toast({
+        	                       message:res.data.data,
+        	                       duration:3000
+        	                 });
         	    	 	  	 }
         	    	 	  }
         	    	 }
@@ -368,7 +413,7 @@ export default {
   		 router.push({
   	   	  path:'./Video_details',
   	   });
-	   window.location.reload();
+//	   window.location.reload();
   	},
   	
   	git_home(){
@@ -497,7 +542,7 @@ export default {
               	     console.log(res);
               	     this.show1s = false;
               	     this.video_img_file = res.id;
-  		               this.img_file = 'http://video-mp.cieo.com.cn/'+res.path;
+  		               this.img_file = 'http://video-vote.cieo.com.cn/'+res.path;
   		               this.inp_show = false;
                   }
               });
@@ -561,7 +606,7 @@ export default {
               	 this.file = files[0];
               	 this.video_file = res.id;
               	 reader.onload = function(){
-                 	  _this.$refs.video.src = 'http://video-mp.cieo.com.cn/'+res.path;
+                 	  _this.$refs.video.src = 'http://video-vote.cieo.com.cn/'+res.path;
               	 };
               	 reader.readAsDataURL(this.file);
               	 this.bofang_sw = true;
@@ -584,7 +629,12 @@ export default {
   	  this.git_shai()
   	  store.state.btn_show = true;
   	  store.state.bottom_1 = false;store.state.bottom_2 = false;store.state.bottom_3 = true;
-  	  window.scrollTo(0,0);  
+  	  window.scrollTo(0,0); 
+  	   this.show1s = true
+  	  window.setTimeout(()=>{
+	  	     document.getElementById('hello').style.minHeight = document.documentElement.clientHeight+'px';
+	  	     this.show1s = false
+	    },500)
 //	  window.setTimeout(()=>{
 //	  	document.getElementById('hello').style.minHeight = document.documentElement.clientHeight+'px';
 //	  },0)

@@ -20,6 +20,7 @@ import Vant from 'vant';
 import 'vant/lib/index.css';
 Vue.use(Vant);
 
+import $ from 'jquery'
 
 router.beforeEach((to, from, next) => {
   window.document.title = to.meta.title;

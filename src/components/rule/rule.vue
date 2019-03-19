@@ -1,10 +1,14 @@
 <template>
   <!--规则-->
-  <div id="hello" style="width:100%;background:blue;height:6.666666rem;">
-       
-         
-       
-
+  <div id="hello" style="width:100%;background:#F8515E;padding:0.266666rem 0;display: none;">
+     <div class="yin">
+     	  <div class="yin_box">
+     	  	   
+     	  </div>  
+     </div>  
+        
+     <van-popup v-model="show1s"><van-loading type="spinner" /></van-popup>
+     <div class="xuan_xiang_box_c"></div>
   </div>
 </template>
 
@@ -17,7 +21,7 @@ export default {
   
   data () {
     return {
-    	
+    	show1s:false,
     }
   },
   methods:{
@@ -27,11 +31,32 @@ export default {
   	  window.scrollTo(0,0);  
   	  store.state.btn_show = true;
   	  store.state.bottom_1 = false;store.state.bottom_2 = true;store.state.bottom_3 = false;
-//	  document.getElementById('hello').style.minHeight = document.documentElement.clientHeight+'px';
-  }
+     
+	    window.setTimeout(()=>{
+	  	     var a = document.documentElement.clientHeight+'px';
+           $("#hello").css('height',a)
+           $("#hello").fadeToggle()
+	    },500)
+	    
+  },
+  
 }
 </script>
 
 <style scoped>
-	
+	.yin_box{
+		   width:9.36rem;
+		   padding: 0.573333rem 0.533333rem;
+		   margin-left: -0.4rem;
+		   border-radius:0.266666rem;
+		   background: white;
+		   height: 11.666666rem;
+	}
+	  .yin{
+	  	  width: 8.56rem;
+	  	  background: #FFADB4;
+	  	  border-radius:0.266666rem;
+	  	  padding: 0.213333rem 0;
+	  	  margin: 0 auto;
+	  }
 </style>
