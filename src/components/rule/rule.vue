@@ -1,6 +1,6 @@
 <template>
   <!--规则-->
-  <div id="hello" style="width:100%;background:#F8515E;padding:0.266666rem 0;display: none;">
+  <div id="hello" style="width:100%;background:#F8515E;padding:0.266666rem 0;">
      <div class="yin">
      	  <div class="yin_box">
      	  	   
@@ -32,11 +32,10 @@ export default {
   	  store.state.btn_show = true;
   	  store.state.bottom_1 = false;store.state.bottom_2 = true;store.state.bottom_3 = false;
      
-	    window.setTimeout(()=>{
+//	    window.setTimeout(()=>{
 	  	     var a = document.documentElement.clientHeight+'px';
            $("#hello").css('height',a)
-           $("#hello").fadeToggle()
-	    },500)
+//	    },500)
 	    
   },
   

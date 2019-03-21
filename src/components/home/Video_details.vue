@@ -10,7 +10,10 @@
       <!--<video  autoplay="autoplay" id="demo_video" onended="" controls="controls" webkit-playsinline='true' playsinline='true' class="video-js vjs-big-play-centered"></video>--> 
     <div class="video_boxa">
     	 <img :src="urlsa" alt="" />
-    	 <video id="demo_video" @click.stop class="video"  ref="video" controls="controls" webkit-playsinline='true' playsinline='true'></video> 
+    	 <video id="demo_video" :src="video_show" @click.stop class="video"  ref="video" controls="controls" webkit-playsinline='true' playsinline='true'>
+    	 	   <source :src="video_show" type="video/mp4">
+           <source :src="video_show" type="video/ogg">
+    	 </video> 
     </div> 
       
       
@@ -22,7 +25,7 @@
       	  	      <p>{{active.school}}</p>
       	  	  </div>
       	  	  <!--头像-->
-      	  	  <div class="img_tou"><img src="../../../static/img/upimg/touxiang.png"/></div>
+      	  	  <div v-if="active.userinfo" class="img_tou"><img :src="active.userinfo.headimgurl"/></div>
       	  </div>
       	  <div class="video_1_box_c2">
       	  	 <div class="video_1_box_c2_cq">视频介绍</div>
@@ -87,6 +90,9 @@ import axios from 'axios'
 export default {
   data () {
     return {
+    	
+    	video_show:'',
+    	
     	show5_s:false,
     	
     	show5:false,
@@ -124,6 +130,7 @@ export default {
         	    	 	  	  window.setTimeout(()=>{//加载视频
         	    	 	  	  	 var url = 'http://video-vote.cieo.com.cn/'+this.active.url;
         	    	 	  	  	 var img = 'http://video-vote.cieo.com.cn/'+this.active.image
+        	    	 	  	  	         this.video_show = url;
                                    this.$refs.video.src = url;
                                    this.urlsa = img
 //              	             };
@@ -216,9 +223,20 @@ export default {
         	    	 	  	 console.log(res.data,'投票');
         	    	 	  	  
         	    	 	  	 if(res.data.status==0){
-        	    	 	  	 	   this.show5 = true;
-		 	                      this.show5_s=true;//支持成功=true/支持失败=false;
-		 	                      this.git_active()
+		 	                    if(localStorage.zici5==5){
+		 	                    	 this.show5 = true;
+		 	                       this.show5_s=true;//支持成功=true/支持失败=false;
+		 	                       localStorage.zici5=0
+		 	                    }else{
+		 	                    	 this.$toast({
+        	                       message:'支持成功',
+        	                       duration:1000
+        	                   });
+        	                   var a = localStorage.zici5?Number(localStorage.zici5):0
+        	                   a+=1;
+        	                   localStorage.zici5 = a
+		 	                    }
+		 	                    this.git_active()
         	    	 	  	 }else if(res.data.status==106){
         	    	 	  	 	   this.show5 = true;
         	    	 	  	 	    this.show5_s=false;
@@ -253,8 +271,19 @@ export default {
         	    	 	  	 console.log(res.data,'投票');
         	    	 	  	  
         	    	 	  	 if(res.data.status==0){
-        	    	 	  	 	    this.show5 = true;
-		 	                      this.show5_s=true;//支持成功=true/支持失败=false;
+        	    	 	  	 	   if(localStorage.zici5==5){
+		 	                    	 this.show5 = true;
+		 	                       this.show5_s=true;//支持成功=true/支持失败=false;
+		 	                       localStorage.zici5=0
+		 	                    }else{
+		 	                    	 this.$toast({
+        	                       message:'支持成功',
+        	                       duration:1000
+        	                   });
+        	                   var a = localStorage.zici5?Number(localStorage.zici5):0
+        	                   a+=1;
+        	                   localStorage.zici5 = a
+		 	                     }
 		 	                      this.git_active()
         	    	 	  	 }else if(res.data.status==106){
         	    	 	  	 	    this.show5 = true;
@@ -300,13 +329,24 @@ export default {
       let hel_height = document.getElementById('hello');
       hel_height.style.minHeight = win_height+'px';
       
-      window.setTimeout(()=>{
+//    window.setTimeout(()=>{
 	  	     document.getElementById('hello').style.minHeight = document.documentElement.clientHeight+'px';
-	    },500)
+//	    },500)
       
 //  window.setTimeout(()=>{
 //  	  this.hellos_show = hel_height<win_height?true:false;
 //  },100)
+      
+      var ver = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+	     ver = parseInt(ver[1], 10)
+       console.log(ver,'ios系统')
+       if(Number(ver)<11){
+       	   this.$toast({
+        	        message:'您的系统版本低于iOS11，如果无法播放视频，建议升级系统至iOS11以上即可',
+        	        duration:13000
+        	  });
+       }
+      
       
       
       this.git_active();
@@ -318,7 +358,7 @@ export default {
 <style scoped>
 	.video_boxa img{
 		width: 100%;
-		height: 100%;
+		min-height: 100%;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -328,6 +368,7 @@ export default {
 		width: 100%;
 		height: 4.933333rem;
 		position: relative;
+		overflow: hidden;
 	}
 	
 	

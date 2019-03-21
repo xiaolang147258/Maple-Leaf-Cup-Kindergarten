@@ -55,9 +55,9 @@
       	  	  <div class="xian"></div>
       	  	   <div class="xuan_xiang_box">
       	  	   	 <div v-for="(i,index) in active_box" class="xuan_xiang_box_c" @click="go_vdet(i)">
-      	  	   	 	  <div class="img_box_s"><img :src="'http://video-mp.cieo.com.cn/'+i.image"/>
-      	  	   	 	    <div class="img_btn">{{i.number}}号</div></div>
-      	  	   	 	  <p class="names">{{i.user}}</p>
+      	  	   	 	  <div class="img_box_s"><img :src="'http://video-vote.cieo.com.cn/'+i.image"/>
+      	  	   	 	    <div class="img_btn">{{i.id}}号</div></div>
+      	  	   	 	  <p class="names">{{i.title}}</p>
       	  	   	 	  <p class="xuexiao">{{i.school}}</p>
       	  	   	 	  <p class="p_img"><img src="../../../static/img/aixin.png" /> &nbsp;<a>{{i.votes}}票</a></p>
       	  	   	 </div>
@@ -67,14 +67,12 @@
     </div> 
      
      
-     
-      <van-popup v-model="show1s"><van-loading type="spinner" /></van-popup>
+    <van-popup v-model="show1s"><van-loading type="spinner" /></van-popup>
       
   </div>
 </template>
 
 <script>
-
 import store from '../../vuex/store.js'
 import router from '../../router/index.js'
 import axios from 'axios'
@@ -91,7 +89,7 @@ export default {
     	page:1,//页数
     	limit:10,//条数
     	inp_val:'',
-    	active_box:'',
+    	active_box:[],
     	
     	columns:'',//赛区
     	
@@ -114,15 +112,16 @@ export default {
   methods:{
   	
   	handleScroll () {
-//           if(this.active_box.length>2){
+  		
+             if(this.active_box.length>2){
+             	
               var aer = document.getElementsByClassName('xuan_xiang_box_c')
-              var window_top = document.documentElement.clientHeight
+              var window_top = document.documentElement.clientHeight;
               var btnheight = Math.trunc(aer[aer.length-1].getBoundingClientRect().bottom)
-             
               
              	if(btnheight<window_top){
              		 
-             		 console.log(777777777777777777777777777)
+             		 console.log(777777777777777777777777777);
              		 
              	   this.page=this.page+1;
              if(this.act_edl!=0){
@@ -150,7 +149,7 @@ export default {
                 });
              	 }   
       	      }
-//           }
+             }
          },
          destroyed () {//移除页面监听--跳转其他页面务必调用该事件
            window.removeEventListener('scroll', this.handleScroll)
@@ -322,15 +321,20 @@ export default {
   	},
   },
   mounted(){
-// localStorage.token = '4d5ffe565a9fff55bd7c8c21d70738b0' 
+  	　  
+// localStorage.setItem("token","23bcf1b3ae14982a27cb641f3cbb558c");
+   
 	 if(localStorage.token&&localStorage.token!=''){
 	 	   console.log(localStorage.token)
 	 }else{
 	 	   this.git_token();
 	 }
-      this.git_index();
+	 window.setTimeout(()=>{
+	 	  this.git_index();
       this.git_recommend();
       this.git_shai();
+	 },100)
+      
       
 //	   document.getElementById('hello').style.height = document.documentElement.clientHeight;
   	   this.$store.state.btn_show = true;
@@ -338,7 +342,12 @@ export default {
   	   this.$store.state.bottom_2 = false;
   	   this.$store.state.bottom_3 = false;
 	     window.scrollTo(0,0);  
+	    
 	     window.addEventListener('scroll', this.handleScroll)
+	     	  
+	     console.log(this.active_box)
+	     
+	     
   }
 }
 
@@ -390,13 +399,17 @@ export default {
 		margin-left: 0.32rem;
 		font-size: 0.4rem;
 		font-weight:500;
-line-height:0.586666rem;
-color:rgba(0,0,0,1);
-opacity:1;
+    line-height:0.586666rem;
+    color:rgba(0,0,0,1);
+    opacity:1;
+     width: 90%;
+     overflow: hidden;
+     text-overflow:ellipsis;
+     white-space: nowrap;
 	}
 	.img_box_s img{
 		width: 100%;
-		height: 100%;
+		min-height:100%;
 	}
 	.img_box_s{
 		width: 100%;

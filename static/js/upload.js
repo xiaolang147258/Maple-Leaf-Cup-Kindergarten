@@ -1,5 +1,9 @@
- class upload {
  
+ import axios from '../../node_modules/axios/index.js'
+ 
+ 
+ class upload {
+      
       constructor(file){
         this._file = file;
         this._fileSize = file.size > 1024
@@ -41,13 +45,17 @@
           fd.append('isLastChunk', isLastChunk); // 是否为末段
           fd.append('isFirstUpload', times === 1 ? 1 : 0); // 是否是第一段（第一次上传）
 
-          fetch(this._api, {
+          axios(this._api, {
             method: "post",
             credentials: 'include',
-            body: fd,
+            data:fd,
           })
-          .then(result => {return result.json()})
-          .then(rs => {
+           
+          .then(result => {
+          	
+          	var rs = result.data;
+          	 
+          	
             // 上传成功
             if (rs.status === 200) {
                 if(typeof this._chunkCallBack === "function")
@@ -75,6 +83,8 @@
                 
             }
           });
+          
+          
           return this;
 
       }

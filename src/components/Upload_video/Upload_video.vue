@@ -19,19 +19,19 @@
      	  	  	 <div class="git_video_box">
      	  	  	 	   <p class="video_p">上传视频</p>
      	  	  	 	   <div class="video_img">
-     	  	  	 	   	 <div @click="video_show=true" v-show="bofang_sw" class="bofang"><img style="width:50%;height:50%;" src="../../../static/img/upimg/bofang.png"/></div>
+     	  	  	 	   	 <div @click="video_c" v-show="bofang_sw" class="bofang"><img style="width:50%;height:50%;" src="../../../static/img/upimg/bofang.png"/></div>
      	  	  	 	   	 <img :src="video_img_url" alt="" />
-     	  	  	 	     <input class="inp_video" type="file" accept="video/avi,video/mp4,video/flv,video/3gp,video/swf"  @change="onFileChange" style="">
+     	  	  	 	     <input class="inp_video"  type="file" accept="video/*"  @change="onFileChange" >
      	  	  	 	   </div>
      	  	  	 	   <div v-show="bofang_sw" @click="del_video" class="video_san">删除视频</div>
      	  	  	 	<!--播放视频组件------------------------------------------------> 
      	  	  	 	 <mu-fade-transition>
-     	  	  	 	  <div @click="video_show=false" v-show="video_show" style="width:100%;height:100%;position:fixed;background:rgba(0,0,0,.5);z-index:300;top: 0;left: 0;">
-     	  	  	 	  	 <mu-slide-top-transition>
-                         <video @click.stop class="video" v-show="video_show" ref="video" controls="controls" webkit-playsinline='true' playsinline='true'></video>
-                    </mu-slide-top-transition>   
-     	  	  	 	  </div>
-                  </mu-fade-transition>  
+     	  	  	 	   <div @click="video_show=false" v-show="video_show" style="width:100%;height:100%;position:fixed;background:rgba(0,0,0,.5);z-index:300;top: 0;left: 0;">
+     	  	  	 	  	  <mu-slide-top-transition>
+                         <video @click.stop class="video" v-show="video_show" ref="video" controls="controls"  webkit-playsinline='true' playsinline='true'></video>
+                     </mu-slide-top-transition>   
+     	  	  	 	   </div>
+                 </mu-fade-transition>  
 
              <!--进度条-->
                   <van-popup v-model="show">
@@ -67,7 +67,7 @@
      	  	  	 </div>
      	  	  	 
      	  	  	 <div class="title_val">
-     	  	  	 	  <p class="video_p" style="margin: 0;">视频标题</p>
+     	  	  	 	  <p class="video_p" style="margin: 0;">视频内容</p>
      	  	  	 	  <div class="text_box">
      	  	  	 	  	<textarea @blur="to_top" v-model="text_val" maxlength="300" class="texta" placeholder="介绍下你的视频吧，可以为你的视频吸引人气哦～"></textarea>
      	  	  	 	  	<p>{{text_val.length}}/300</p>
@@ -87,7 +87,7 @@
      	  	  	 	  <div class="video_box">
      	  	  	 	  	  <div @click="go_vdieo(i)" class="video_img_box">
      	  	  	 	  	  	<img id="video_img_box_img2" src="../../../static/img/upimg/bofanganniu.png" alt="" />
-     	  	  	 	  	  	<img id="video_img_box_img1" :src="'http://video-mp.cieo.com.cn/'+i.image" alt="" />
+     	  	  	 	  	  	<img id="video_img_box_img1" :src="'http://video-vote.cieo.com.cn/'+i.image" alt="" />
      	  	  	 	  	  </div>
      	  	  	 	  	  <div class="video_p_box">
      	  	  	 	  	  	  <p class="name_p">{{i.user}}</p><div class="name_hao">{{i.id}}号</div>
@@ -208,7 +208,7 @@ export default {
     	
     	names:'',
     	iphones:'',
-    	show4:true,//绑定手机号弹框状态
+    	show4:false,//绑定手机号弹框状态
     	
     	 class_show:true,
     	
@@ -231,7 +231,6 @@ export default {
     	 sai_id:'',
     	 show1:false,
     	
-    	
     	 hel_tab_sw:0,
     	 video_img_url:'static/img/upimg/shangchaunship.png',
     	 video_show:false,
@@ -246,6 +245,19 @@ export default {
     }
   },
   methods:{
+  	video_c(){
+  		 this.video_show=true;
+  		 var ver = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+	     ver = parseInt(ver[1], 10)
+       console.log(ver,'ios系统')
+       if(Number(ver)<11){
+       	   this.$toast({
+        	        message:'您的系统版本低于iOS11，如果无法播放视频，建议升级系统至iOS11以上即可',
+        	        duration:10000
+        	  });
+       }
+   },
+  	
   	kaolv(){
   		router.push({
   	   	 path:'./home',
@@ -259,15 +271,26 @@ export default {
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
         	    	 	  	  localStorage.token = '';
         	    	 	  	  router.push({
-  	   	                    path:'./home',
-  	                    });
+	   	                    path:'./home',
+	                    });
         	    	 	  }else{
         	    	 	  	 console.log(res.data,'投票');
         	    	 	  	  
         	    	 	  	 if(res.data.status==0){
-        	    	 	  	 	    this.show6 = true;
-		 	                      this.show5_s=true;//支持成功=true/支持失败=false;
-		 	                      this.hel_click(1);
+		 	                    if(localStorage.zici5==5){
+		 	                    	 this.show6 = true;
+		 	                       this.show5_s=true;//支持成功=true/支持失败=false;
+		 	                       localStorage.zici5=0
+		 	                    }else{
+		 	                    	 this.$toast({
+        	                       message:'支持成功',
+        	                       duration:1000
+        	                   });
+        	                   var a = localStorage.zici5?Number(localStorage.zici5):0
+        	                   a+=1;
+        	                   localStorage.zici5 = a
+		 	                    }
+		 	                     this.hel_click(1);
         	    	 	  	 }else if(res.data.status==106){
         	    	 	  	 	    this.show6 = true;
         	    	 	  	 	    this.show5_s=false;
@@ -282,7 +305,6 @@ export default {
                 }).catch(err=>{
                 	 console.log(err)
               }); 
-  		   
   	},
   	
   	zhici(i,index){
@@ -295,15 +317,26 @@ export default {
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
         	    	 	  	  localStorage.token = '';
         	    	 	  	  router.push({
-  	   	                    path:'./home',
-  	                    });
+	   	                    path:'./home',
+	                    });
         	    	 	  }else{
         	    	 	  	 console.log(res.data,'投票');
-        	    	 	  	  
         	    	 	  	 if(res.data.status==0){
-        	    	 	  	 	    this.show6 = true;
-		 	                      this.show5_s=true;//支持成功=true/支持失败=false;
-		 	                      this.hel_click(1);
+		 	                    if(localStorage.zici5==5){
+		 	                    	 this.show6 = true;
+		 	                       this.show5_s=true;//支持成功=true/支持失败=false;
+		 	                       localStorage.zici5=0
+		 	                    }else{
+		 	                    	 this.$toast({
+        	                       message:'支持成功',
+        	                       duration:1000
+        	                   });
+        	                   var a = localStorage.zici5?Number(localStorage.zici5):0
+        	                   a+=1;
+        	                   localStorage.zici5 = a;
+		 	                    }
+		 	                    this.hel_click(1);  
+		 	                    
         	    	 	  	 }else if(res.data.status==106){
         	    	 	  	 	    this.show6 = true;
         	    	 	  	 	    this.show5_s=false;
@@ -328,8 +361,8 @@ export default {
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
         	    	 	  	  localStorage.token = '';
         	    	 	  	  router.push({
-  	   	                    path:'./home',
-  	                    });
+	   	                    path:'./home',
+	                    });
         	    	 	  }else{
         	    	 	  	 console.log(res.data,'赛区');
         	    	 	  	 this.columns = res.data.data;
@@ -359,8 +392,8 @@ export default {
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
         	    	 	  	  localStorage.token = '';
         	    	 	  	  router.push({
-  	   	                    path:'./home',
-  	                    });
+	   	                    path:'./home',
+	                    });
         	    	 	  }else{
         	    	 	  	 console.log(res.data.data);
         	    	 	  	 if(res.data.data=='请求成功'){
@@ -394,8 +427,8 @@ export default {
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
         	    	 	  	  localStorage.token = '';
         	    	 	  	  router.push({
-  	   	                    path:'./home',
-  	                    });
+	   	                    path:'./home',
+	                    });
         	    	 	  }else{
         	    	 	  	console.log(res.data);
         	    	 	  	this.show4 = res.data.data==0?true:false;
@@ -457,8 +490,8 @@ export default {
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
         	    	 	  	  localStorage.token = '';
         	    	 	  	  router.push({
-  	   	                    path:'./home',
-  	                    });
+	   	                    path:'./home',
+	                    });
         	    	 	  }else if(res.data.status==0){//添加视频成功
         	    	 	  	  console.log(res.data);
         	    	 	  	  this.show1s = false;
@@ -499,8 +532,8 @@ export default {
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
         	    	 	  	  localStorage.token = '';
         	    	 	  	  router.push({
-  	   	                    path:'./home',
-  	                    });
+	   	                    path:'./home',
+	                    });
         	    	 	  }else{
         	    	 	  	  console.log(res.data,'已上传的视频');
         	    	 	  	  this.video_boxs = res.data.data.reverse();
@@ -533,7 +566,7 @@ export default {
   		 console.log(file);
   		 
   		 var aaa = new upload(file.file);
-        aaa.setApi("/wechat/api/uploadVideo");
+        aaa.setApi("/uploadVideo");
         aaa.setChunkCallBack(rs=>{
               console.log(rs,'1111');
               this.show1s = true
@@ -571,6 +604,11 @@ export default {
       for(var i=0;i<this.columns[index].children.length;i++){
       	  this.columns_s.push(this.columns[index].children[i].label);
       }
+      
+      this.xiaoqu = '请选择校区';
+      
+      this.xiao_id = '';
+      
       this.sai_id = this.columns[index].value;
       console.log(this.sai_id);
     },
@@ -587,10 +625,16 @@ export default {
         if (!files.length) return;
         //视频上传
         console.log(files,'视频')
-        
-        let _this = this;
+       
+       let size =  files[0].size/1024;   
+       console.log(size,'  视频大小');
+       
+       if(size>=100000){
+       	    this.$toast({message:'视频大小不能超过100M',duration:2000}); 
+       }else{
+//     	   let _this = this;
         var aaa = new upload(files[0]);
-        aaa.setApi("/wechat/api/uploadVideo");
+        aaa.setApi("/uploadVideo");
         aaa.setChunkCallBack(rs=>{
               console.log(rs,'1111');
               this.show = true;
@@ -602,26 +646,18 @@ export default {
               	this.show = false;
               	console.log(res)
               	 //视频预览
-              	 var reader = new FileReader();
-              	 this.file = files[0];
-              	 this.video_file = res.id;
-              	 reader.onload = function(){
-                 	  _this.$refs.video.src = 'http://video-vote.cieo.com.cn/'+res.path;
-              	 };
-              	 reader.readAsDataURL(this.file);
-              	 this.bofang_sw = true;
-              	  Notify({
-                     message: '上传成功',
-                    duration: 1000,
-                    background: '#1989fa'
-                   });
+              	   this.video_file = res.id;
+                 	 this.$refs.video.src = 'http://video-vote.cieo.com.cn/'+res.path;
+//                 this.$refs.video.src = 'http://video-vote.cieo.com.cn/upload/2019-03-21/ns6nho0mw9i1553140198345Netscape7tjf4ehet9ce872b3b8be8ac09d7c879f92ae74219.mp4'
+                     
+              	   this.bofang_sw = true;
+              	   
+                   this.$toast({message:'上传成功',duration:1000});
                   }
               });
           aaa.startUpload();
-        
+       }
   	},
-  	
-  	
   },
   mounted(){
   	  
@@ -630,16 +666,18 @@ export default {
   	  store.state.btn_show = true;
   	  store.state.bottom_1 = false;store.state.bottom_2 = false;store.state.bottom_3 = true;
   	  window.scrollTo(0,0); 
-  	   this.show1s = true
-  	  window.setTimeout(()=>{
+//	  this.show1s = true
+//	  window.setTimeout(()=>{
 	  	     document.getElementById('hello').style.minHeight = document.documentElement.clientHeight+'px';
-	  	     this.show1s = false
-	    },500)
+//	  	     this.show1s = false
+//	    },500)
 //	  window.setTimeout(()=>{
 //	  	document.getElementById('hello').style.minHeight = document.documentElement.clientHeight+'px';
 //	  },0)
 	    
+	   
   }
+  
 }
 </script>
 

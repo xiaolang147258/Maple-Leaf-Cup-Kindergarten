@@ -1,9 +1,9 @@
 <template>
   <div id="app"  >
   	
-  <transition :name="transitionName" mode=""> 
+  <!--<transition :name="transitionName" mode="">--> 
      <router-view class="transitionBody"></router-view>
-  </transition> 
+  <!--</transition>--> 
    
    <div v-show="$store.state.btn_show" style="width:100%;height: 1.306666rem;float: left;"></div>
    <div v-show="$store.state.btn_show" class="btn">
@@ -43,13 +43,13 @@ export default {
   },
   
   watch: { 
-  '$route' (to, from) { 
-  	
-   const arr = ['/home','/rule','/Upload_video'];
-   const compare = arr.indexOf(to.path)>arr.indexOf(from.path);
-   this.transitionName = compare ? 'transitionLeft' : 'transitionRight';
-   
-  } 
+//'$route' (to, from) { 
+//	
+// const arr = ['/home','/rule','/Upload_video'];
+// const compare = arr.indexOf(to.path)>arr.indexOf(from.path);
+// this.transitionName = compare ? 'transitionLeft' : 'transitionRight';
+// 
+//} 
  },
   
  methods:{
@@ -73,8 +73,9 @@ export default {
  	  },
  },
  mounted(){
- 	 
- }
+ 	    
+ },
+ 
 }
 </script>
 
