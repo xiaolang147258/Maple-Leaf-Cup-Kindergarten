@@ -1,5 +1,5 @@
 <template>
-  <!--首页-->
+  <!--首页1-->
   <div id="hello" style="width:100%;background:#F8515E;padding-bottom:0.413333rem;float: left;">
   	
   	  <img class="feng1" src="../../../static/img/fengye.png" alt="" />
@@ -7,7 +7,19 @@
   	  <img class="feng3" src="../../../static/img/fengye_a.png"/>
   	  <img class="feng4" src="../../../static/img/fengye_b.png"/>
   	
-      <img class="top_img" src="../../../static/img/banner.png" alt="" />
+      <!--<img class="top_img" src="../../../static/img/xin/_20190327160444.jpg" alt="" />-->
+      
+      <div class="top_img">
+      	  <swiper :options="swiperOption">
+             <div class="swiper-slide"><img src="../../../static/img/xin/_20190329174145.jpg" alt="" /></div>
+             <div class="swiper-slide"><img src="../../../static/img/xin/_20190329174156.jpg" alt="" /></div>
+             
+          </swiper>
+          <!-- 如果需要分页器 -->
+           <div class="swiper-pagination"></div>
+      </div>
+      
+      
       
       <div class="img_box"><img src="../../../static/img/laba.png" alt="" />
          <p v-if="isEnd==false">活动倒计时：<a>{{shi.d}}</a>天<a>{{shi.h}}</a>时<a>{{shi.m}}</a>分<a>{{shi.s}}</a>秒</p>
@@ -34,8 +46,9 @@
       </div>
       
       <div class="img_box_2">
-      	  <input v-model="inp_val" @blur="git_search" @focus="inp_show=false" type="text" id="inp" />
-      	  <img @click="inp_fl" v-show="inp_show" src="../../../static/img/sousuo.png" alt="" /><p @click="inp_fl" v-show="inp_show">搜索学生姓名</p>
+      	  <input v-model="inp_val" @blur="inp_blur" @focus="inp_show=false" type="text" id="inp" />
+      	  <img @click="inp_fl" v-show="inp_show" src="../../../static/img/sousuo.png" alt="" /><p @click="inp_fl" v-show="inp_show">搜索学生编号/姓名 </p>
+          <div @click="git_search" class="inp_btn">搜索</div>
       </div>
      
      <div class="yin_s2_f">
@@ -53,7 +66,7 @@
       	  	     </div> 
       	  	  </div>
       	  	  <div class="xian"></div>
-      	  	   <div class="xuan_xiang_box">
+      	  	   <div v-if="active_box.length!=0" class="xuan_xiang_box">
       	  	   	 <div v-for="(i,index) in active_box" class="xuan_xiang_box_c" @click="go_vdet(i)">
       	  	   	 	  <div class="img_box_s"><img :src="'http://video-vote.cieo.com.cn/'+i.image"/>
       	  	   	 	    <div class="img_btn">{{i.id}}号</div></div>
@@ -65,8 +78,7 @@
       	  </div>
       </div>
     </div> 
-     
-     
+
     <van-popup v-model="show1s"><van-loading type="spinner" /></van-popup>
       
   </div>
@@ -76,11 +88,18 @@
 import store from '../../vuex/store.js'
 import router from '../../router/index.js'
 import axios from 'axios'
+//import Swiper from 'swiper'
 export default {
   store,
   data () {
     return {
-    	show1s:false,
+    	 swiperOption: {//初始化swiper
+    	   	 pagination: {
+              el: '.swiper-pagination',
+              bulletElement : 'li',
+           },
+         },
+    	show1s:true,
     	inp_show:true,
     	show_btn:0,
     	index_box:'',//基础信息
@@ -110,6 +129,10 @@ export default {
   
   
   methods:{
+  	inp_blur(){
+  		  this.inp_show = this.inp_val==''?true:false;
+  		
+  	},
   	
   	handleScroll () {
   		
@@ -178,7 +201,7 @@ export default {
                 	 this.$toast({message:'网络错误',duration:3000});
               });
   		    }else{
-  		    	       this.inp_show=true
+		    	       this.inp_show=true
   		    }
   	},
   	
@@ -260,7 +283,7 @@ export default {
   	},
   	
   	git_token(){//微信授权
-  		   axios.get('token'
+		   axios.get('token'
         	    ).then(res=>{
         	    	 if(res.status = 200){
         	    	 	   console.log(res.data.data);
@@ -274,10 +297,11 @@ export default {
   	},
   	
   	go_vdet(i){//跳转入作品详情
-  		   window.removeEventListener('scroll', this.handleScroll)
+  		 window.removeEventListener('scroll', this.handleScroll)
   		  localStorage.video_id = i.id;
   		  router.push({
-  	   	 path:'./Video_details'
+//	   	 name:'Video_details',
+  	   	 path:`/Video_details/${localStorage.video_id}`,
   	   });
 //	   window.location.reload()
   	},
@@ -319,10 +343,14 @@ export default {
                 	 this.$toast({message:'网络错误',duration:3000});
               });
   	},
+  	
+  	
   },
   mounted(){
-  	　  
+      
 // localStorage.setItem("token","23bcf1b3ae14982a27cb641f3cbb558c");
+   
+// localStorage.token = 'd4346cdbf5fe5f4700d8ccf25d5f7db4'
    
 	 if(localStorage.token&&localStorage.token!=''){
 	 	   console.log(localStorage.token)
@@ -335,8 +363,8 @@ export default {
       this.git_shai();
 	 },100)
       
-      
 //	   document.getElementById('hello').style.height = document.documentElement.clientHeight;
+
   	   this.$store.state.btn_show = true;
   	   this.$store.state.bottom_1 = true;
   	   this.$store.state.bottom_2 = false;
@@ -346,14 +374,34 @@ export default {
 	     window.addEventListener('scroll', this.handleScroll)
 	     	  
 	     console.log(this.active_box)
-	     
-	     
+	      
   }
 }
 
 </script>
 
 <style scoped>
+	.swiper-slide img{
+		width: 100%;
+		height: 100%;
+	}
+	.swiper-slide{
+		width: 100%;
+		height: 5.626666rem;
+	}
+	.inp_btn{
+		width: 1.386666rem;
+		height:1.066666rem;
+		float: right;
+		margin-right: 0.55rem;
+		background: white;
+		border-radius: 0.533333rem;
+		line-height: 1.066666rem;
+		text-align: center;
+		color: #4DB1E5;
+		font-size: 0.373333rem;
+		
+	}
 	.img_btn{
 		
 		position: absolute;
@@ -391,8 +439,8 @@ export default {
 		margin-left: 0.32rem;
 		width: 85%;
 		overflow: hidden;
-                        text-overflow:ellipsis;
-                        white-space: nowrap;
+    text-overflow:ellipsis;
+    white-space: nowrap;
 	}
 	.names{
 		margin-top: 0.213333rem;
@@ -408,8 +456,11 @@ export default {
      white-space: nowrap;
 	}
 	.img_box_s img{
-		width: 100%;
+		width:100%;
 		min-height:100%;
+		position: absolute;
+		top:0;
+		left:0;
 	}
 	.img_box_s{
 		width: 100%;
@@ -558,7 +609,7 @@ export default {
 	.img_box_2 p{
 		font-size: 0.426666rem;
 		position:absolute;
-		right: 3.106666rem;
+		right: 3.0606666rem;
 		top: 0.226666rem;
 		color: #BABABA;
 	}
@@ -566,22 +617,24 @@ export default {
 		 width: 0.4rem;
 		 height: 0.4rem;
 		 position: absolute;
-		 left: 3.133333rem;
+		 left: 2.133333rem;
 		 top: 0.333333rem;
 	}
 	#inp{
 		border: none;
 		height: 100%;
-		width: 60%;
-		margin-left: 1.8rem;
+		width: 53%;
+		margin-left:2rem;
 		text-align: center;
+		border-radius: 0.533333rem;
+		float: left;
 	}
 	
 	.img_box_2{
 		width: 9.36rem;
 		height: 1.066666rem;
 		margin: 0.28rem auto;
-		background:url('../../../static/img/sousuokaung.png');
+		background:url('../../../static/img/xin/sousuokaung.png');
 		background-size:100% 100%;background-repeat:no-repeat;
 		position: relative;
 		 z-index: 1;

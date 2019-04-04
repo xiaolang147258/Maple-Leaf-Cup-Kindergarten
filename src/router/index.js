@@ -14,7 +14,7 @@ export default new Router({
 	
   routes: [
       {path:'/home',meta:{title:'视频投票'},component:home},
-      {path: '/Video_details',meta:{title:'查看视频'},component:Video_details},
+      {path: '/Video_details/:id',meta:{title:'查看视频'},name:'Video_details',component:Video_details},
       {path: '/rule',meta:{title:'规则'},component:rule},
       {path: '/Upload_video',meta:{title:'视频'},component:Upload_video},
       

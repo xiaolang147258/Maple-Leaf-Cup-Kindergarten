@@ -72,8 +72,9 @@ export default {
   	   
  	  },
  },
+ 
  mounted(){
- 	    
+// 	    alert(111111)
  },
  
 }

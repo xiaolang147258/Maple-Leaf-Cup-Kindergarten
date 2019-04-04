@@ -1,29 +1,46 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-Vue.use(Vuex);
-  
-  var Initialization = {}
-  
-   Initialization.one=function(url,i){
+//import wx from 'http://res.wx.qq.com/open/js/jweixin-1.4.0.js'
 
-//           var video_show = localStorage.video_show==1?false:true
-       
-	 	   	     var options = {
-                controls: true,
-                url:url,//http://og9dz2jqu.cvoda.com/Zmlyc3R2b2RiOm9jZWFucy0xLm1wNA==_q00000001.m3u8
-                type:'video/mp4',
-                preload:true,
-                stretching:"panscan",
-                poster:state.video_b_url,
-                autoplay:true // 如为 true，则视频将会自动播放
-               }
-            
-               var player = new QiniuPlayer('demo_video',options); 
-        };     
-	 	   	Initialization.add = function(url){	}
-	 	   	    	
+Vue.use(Vuex);
+
+/////////////////////////////////微信分享/////////////////////////////////////////////////////////////////////////////////////////
+	
+	var checkJsApi = function(jsons,title,desc,link,imgUrl){
+		
+	wx.config(jsons);//注入配置信息  
+		
+    wx.ready(function () {   //需在用户可能点击分享按钮前就先调用
+    wx.updateAppMessageShareData({ 
+        title: title, // 分享标题
+        desc: desc, // 分享描述
+        link: link, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+        imgUrl: imgUrl, // 分享图标
+        success: function () {
+          // 设置成功
+        }
+    });
+    wx.updateTimelineShareData({ 
+        title:title, // 分享标题
+        link:link, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+        imgUrl:imgUrl, // 分享图标
+        success: function () {
+          // 设置成功
+        }
+    })
+    });
+   
+    
+	}
+	
+	
+	
+	 	 
+	 	 
 const state = {
+	wxconfin:checkJsApi,//微信分享
+	
 	urls:'http://video-mp.cieo.com.cn',//全局请求头
 	
 	data:{//全局存储当前登录用登录信息
@@ -46,11 +63,7 @@ const state = {
     
     video_b_url:'',
     
-    dat:{
-         
-      	 Initializationone:Initialization.one,    
-      	 Initializationadd:Initialization.add    
-      },
+    
     
     tou_url:'',
     

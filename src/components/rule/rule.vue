@@ -3,6 +3,8 @@
   <div id="hello" style="width:100%;background:#F8515E;padding:0.266666rem 0;">
      <div class="yin">
      	  <div class="yin_box">
+     	  	 <img src="../../../static/img/xin/pa.png" alt="" />
+     	  	 <img style="height: 14.04rem;" src="../../../static/img/xin/huodongxiangqing.png" alt="" />  
      	  	   
      	  </div>  
      </div>  
@@ -34,7 +36,7 @@ export default {
      
 //	    window.setTimeout(()=>{
 	  	     var a = document.documentElement.clientHeight+'px';
-           $("#hello").css('height',a)
+           $("#hello").css('min-height',a)
 //	    },500)
 	    
   },
@@ -43,13 +45,18 @@ export default {
 </script>
 
 <style scoped>
+	.yin_box img{
+		width: 8.2rem;
+		height: 11.253333rem;
+	}
 	.yin_box{
 		   width:9.36rem;
 		   padding: 0.573333rem 0.533333rem;
 		   margin-left: -0.4rem;
 		   border-radius:0.266666rem;
 		   background: white;
-		   height: 11.666666rem;
+		   padding-left: 0.703333rem;
+		   /*height: 11.666666rem;*/
 	}
 	  .yin{
 	  	  width: 8.56rem;

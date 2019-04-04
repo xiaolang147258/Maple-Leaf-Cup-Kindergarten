@@ -27,6 +27,13 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import 'swiper/dist/css/swiper.css'
+Vue.use(VueAwesomeSwiper, /* { default global options } */)
+
+
+//import 'lib-flexible'
+
 //import VueTouch from 'vue-touch'
 //Vue.use(VueTouch, {name: 'v-touch'})
 

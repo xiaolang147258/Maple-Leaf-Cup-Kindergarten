@@ -1,7 +1,7 @@
 <template>
   <!--视频详情-->
   <div id="hello" style="width:100%;background:#F8515E;padding-bottom:0.4rem;" :class="{hellos:hellos_show}">
-  	  
+  	  <div class="xuan_xiang_box_c"></div>
   	   <img class="imgs_1" src="../../../static/img/fengye.png"/>
   	   <img class="imgs_2" src="../../../static/img/fengye_b.png" alt="" />
   	   <img class="imgs_3" src="../../../static/img/fengye_a.png" alt="" />
@@ -10,7 +10,7 @@
       <!--<video  autoplay="autoplay" id="demo_video" onended="" controls="controls" webkit-playsinline='true' playsinline='true' class="video-js vjs-big-play-centered"></video>--> 
     <div class="video_boxa">
     	 <img :src="urlsa" alt="" />
-    	 <video id="demo_video" :src="video_show" @click.stop class="video"  ref="video" controls="controls" webkit-playsinline='true' playsinline='true'>
+    	 <video id="demo_video" preload="auto" @click.stop class="video"  ref="video" controls="controls" webkit-playsinline='true' playsinline='true'>
     	 	   <source :src="video_show" type="video/mp4">
            <source :src="video_show" type="video/ogg">
     	 </video> 
@@ -28,13 +28,18 @@
       	  	  <div v-if="active.userinfo" class="img_tou"><img :src="active.userinfo.headimgurl"/></div>
       	  </div>
       	  <div class="video_1_box_c2">
-      	  	 <div class="video_1_box_c2_cq">视频介绍</div>
+      	  	 <!--<div class="video_1_box_c2_cq" style="margin-bottom: 0.2rem;">{{active.title}}</div>-->
+      	  	 <!--<div class="video_1_box_c2_cq2">
+      	  	 	  {{active.title}}
+      	  	 </div>-->
+      	  	
+      	  	 <div class="video_1_box_c2_cq">{{active.title}}</div>
       	  	 <div class="video_1_box_c2_cq2">
       	  	 	  {{active.content}}
       	  	 </div>
       	  	 <div class="btn_box">
-      	  	  <div @click="zhi_click_1(1)" style="background:#FF6F7A;float: left;">为他/她投一票(+1)</div>
-      	  	  <div @click="zhi_click(10)" style="background:#4DB1E5;float: right;">大力支持他/她(+10)</div>
+      	  	  <div @click="zhi_click_1(1)" style="background:#FF6F7A;float: left;">为他/她投一票(+1) <p id="no1">+1</p></div>
+      	  	  <div @click="zhi_click(10)" style="background:#4DB1E5;float: right;">大力支持他/她(+10) <p id="no10">+10</p> </div>
       	     </div>
       	  </div>
       </div>
@@ -47,6 +52,13 @@
           	 	   <p class="iphone_s_box_p">支持一下你心中的Superstar吧!</p><img class="iphone_s_box_img" src="../../../static/img/xin/qiqiu.png" alt="" />
           	 	   <input v-model="names" @blur="to_top" class="iphone_s_box_inp" type="text" placeholder="请填写您的姓名" />
           	 	   <input v-model="iphones" style="margin-top:0.266666rem;" @blur="to_top" class="iphone_s_box_inp" type="number" pattern="\d*" name="number" placeholder="请输入手机号" />
+          	     
+          	     <!--<div class="yancss">
+          	     	  <input type="number" maxlength="8" placeholder="请输入验证码" />
+          	     	  <button v-if="yan_btn_show" class="yan_btn">获取验证码</button>
+          	     	  <button v-else class="yan_btn_no">获取验证码</button>
+          	     </div>-->
+          	     
           	     <div class="iphone_s_box_p_box"><img src="../../../static/img/upimg/tishi.png"/><p>首次支持需完善个人信息</p></div>
           	     <div class="btn_boxs">
           	     	   <div @click="show4=false" style="background:rgba(255,223,99,1);float:left;color:#666666;" class="btn_boxsbtn">考虑一下</div>
@@ -56,7 +68,7 @@
           	</mu-scale-transition> 
           </div>
      </mu-fade-transition>
-    <!--支持成功/失败--->  
+    <!--支持成功/失败-->  
      <mu-fade-transition>
           <div @touchmove.prevent class="iphone_ss" v-show="show5">
           	   <mu-scale-transition>
@@ -78,7 +90,7 @@
           </div>
      </mu-fade-transition> 
       
-      <van-popup v-model="show1s"><van-loading type="spinner" /></van-popup>
+     <van-popup v-model="show1s"><van-loading type="spinner" /></van-popup>
       
   </div>
 </template>
@@ -90,6 +102,9 @@ import axios from 'axios'
 export default {
   data () {
     return {
+		noshow:false,
+		
+    	yan_btn_show:true,
     	
     	video_show:'',
     	
@@ -98,9 +113,11 @@ export default {
     	show5:false,
     	
     	hellos_show:false,
+    	
     	show4:false,
     	
     	names:'',
+    	
     	iphones:'',
     	
     	show1s:false,
@@ -113,10 +130,61 @@ export default {
     }
   },
   methods:{
+  	no1_play(i){//支持成功的动画提示效果
+	   if(i==1){
+		 $('#no1').css('opacity','1')
+		 $('#no1').animate({top:'-=100px',opacity:'0'},1500);
+		 $('#no1').animate({top:'0',opacity:'0'},0);
+	   }else{
+		 $('#no10').css('opacity','1')
+		 $('#no10').animate({top:'-=100px',opacity:'0'},1500);
+		 $('#no10').animate({top:'0',opacity:'0'},0);  
+	   }
+	},
+	
+  	herf_url(){//微信二次分享重置url
+//		  window.location.href = 'http://video-vote.cieo.com.cn/'
+//      function getQueryString(name) {//根据字段看网址是否拼接&字符串
+//          var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+//          var r = window.location.search.substr(1).match(reg);
+//          if (r != null)
+//              return unescape(r[2]);
+//          return null;
+//      }
+//      var from = getQueryString('from');
+//      var appinstall = getQueryString('appinstall');
+//      var sec = getQueryString('sec');
+//      var timekey = getQueryString('timekey');
+//
+//      if (from || appinstall || sec || timekey) {//假如拼接上了
+//          window.location.href = "http://video-vote.cieo.com.cn/";
+//      }
+
+  	},
+  	
+  	wxconfig(title,desc,link,imgUrl){//配置微信分享
+      let _url = '';
+      if (window.__wxjs_is_wkwebview === true) {
+        _url = window.location.href.split('#')[0] || window.location.href
+      } else {
+        _url = window.location.href
+      }
+  		   axios.get('getJSSDKConfig?token='+localStorage.token+'&url='+encodeURIComponent(_url)
+        	    ).then(res=>{
+        	    	 if(res.status = 200){
+        	    	 	      console.log(res.data,'微信sdk');
+        	    	 	      this.$store.state.wxconfin(res.data,title,desc,link,imgUrl);   
+        	    	 }
+                }).catch(err=>{
+                	 console.log(err);
+                	 this.$toast({message:'网络错误',duration:3000});
+              });
+  	},
   	
   	git_active(){
-  		  this.show1s = true
-  			 axios.get('getVideo?token='+localStorage.token+'&id='+localStorage.video_id
+  		  this.show1s = true;
+  		  console.log(this.$route.params.id,'参数')
+  			 axios.get('getVideo?token='+localStorage.token+'&id='+this.$route.params.id
         	    ).then(res=>{
         	    	 if(res.status = 200){
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
@@ -127,11 +195,18 @@ export default {
         	    	 	  }else{
         	    	 	  	  console.log(res.data.data,'详情数据');
         	    	 	  	  this.active = res.data.data
+//      	    	 	  	   var urls=encodeURIComponent(window.location.href)
+                        this.herf_url()
+        	    	 	  	  this.wxconfig('《枫叶杯》'+this.active.title,this.active.content,window.location.href,'http://video-vote.cieo.com.cn/'+this.active.image);
+        	    	 	  	  
         	    	 	  	  window.setTimeout(()=>{//加载视频
         	    	 	  	  	 var url = 'http://video-vote.cieo.com.cn/'+this.active.url;
-        	    	 	  	  	 var img = 'http://video-vote.cieo.com.cn/'+this.active.image
+        	    	 	  	  	 var img = 'http://video-vote.cieo.com.cn/'+this.active.image;
+//      	    	 	  	  	      this.$nextTick(function () {
+                                     this.$refs.video.src = url;
+//                                });
         	    	 	  	  	         this.video_show = url;
-                                   this.$refs.video.src = url;
+                                  
                                    this.urlsa = img
 //              	             };
 //                         store.state.video_b_url = url;
@@ -145,6 +220,7 @@ export default {
                 	 this.$toast({message:'网络错误',duration:3000});
               }); 
   	},
+  	
   	git_home(){
   		 router.push({
   	   	 path:'./home',
@@ -211,6 +287,7 @@ export default {
   	},
   	
   	zhi_click_1(i){//用户点击支持按钮
+	      // this.no1_play()
   		 	   axios.get('vote?token='+localStorage.token+'&id='+localStorage.video_id+'&support=""'
         	    ).then(res=>{
         	    	 if(res.status = 200){
@@ -236,7 +313,9 @@ export default {
         	                   a+=1;
         	                   localStorage.zici5 = a
 		 	                    }
-		 	                    this.git_active()
+		 	                    // this.git_active()
+								this.active.votes+=1;
+								this.no1_play(1)
         	    	 	  	 }else if(res.data.status==106){
         	    	 	  	 	   this.show5 = true;
         	    	 	  	 	    this.show5_s=false;
@@ -284,7 +363,9 @@ export default {
         	                   a+=1;
         	                   localStorage.zici5 = a
 		 	                     }
-		 	                      this.git_active()
+		 	                      // this.git_active()
+								  this.active.votes+=10;
+								  this.no1_play(10)
         	    	 	  	 }else if(res.data.status==106){
         	    	 	  	 	    this.show5 = true;
         	    	 	  	 	    this.show5_s=false;
@@ -317,12 +398,24 @@ export default {
       window.scrollTo(0,0);  
   	},
   	
+  	ios_a(){
+//		  var str= navigator.userAgent.toLowerCase(); 
+//      var ver=str.match(/cpu iphone os (.*?) like mac os/);
+//      var a = parseInt(ver[1], 10)
+//      if(Number(ver)<11){
+//      	  this.$toast({
+//      	        message:'您的系统版本低于iOS11，如果无法播放视频，建议升级系统至iOS11以上即可',
+//      	        duration:13000
+//      	  });
+//      }
+        
+  	},
   	
   },
   mounted(){
   	  this.$store.state.btn_show = false;
 //	  document.getElementById('hello').style.height = document.documentElement.clientHeight+'px';
-     
+      this.ios_a()
       window.scrollTo(0,0);  
       
       let win_height = document.documentElement.clientHeight;
@@ -337,25 +430,71 @@ export default {
 //  	  this.hellos_show = hel_height<win_height?true:false;
 //  },100)
       
-      var ver = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-	     ver = parseInt(ver[1], 10)
-       console.log(ver,'ios系统')
-       if(Number(ver)<11){
-       	   this.$toast({
-        	        message:'您的系统版本低于iOS11，如果无法播放视频，建议升级系统至iOS11以上即可',
-        	        duration:13000
-        	  });
-       }
-      
-      
-      
+
       this.git_active();
+      
       this.git_iphone();
      }
 }
 </script>
 
 <style scoped>
+	#no10{
+		color: #4DB1E5;
+		opacity:0;
+		/* transition: 1s; */
+		position: absolute;
+	}
+	
+	#no1{
+		color: #FF6F7A;
+		opacity:0;
+		/* transition: 1s; */
+		position: absolute;
+	}
+	.yan_btn_no{
+		width: 2.666666rem;
+		height: 100%;
+		float: left;
+		border-radius:0.133333rem;
+		font-size: 0.373333rem;
+		line-height: 1.013333rem;
+		background:#DEDEDE;
+		color:white;
+		margin-left:0.266666rem;
+		border: none;
+	}
+	.yan_btn{
+		width: 2.666666rem;
+		height: 100%;
+		float: left;
+		border-radius:0.133333rem;
+		font-size: 0.373333rem;
+		line-height: 1.013333rem;
+		background: #FFDF63;
+		color: #666666;
+		margin-left: 0.266666rem;
+	}
+	.yancss input{
+		float: left;
+		width: 3.5rem;
+		height: 100%;
+		border: none;
+		background: #F0F0F0;
+		border-radius:0.133333rem;
+		font-size: 0.373333rem;
+		line-height: 1.013333rem;
+		/*padding-left: 0.266666rem;*/
+		text-align: center;
+	}
+	.yancss{
+		width: 100%;
+		height: 1.013333rem;
+		margin-top: 0.266666rem;
+	}
+	
+	
+	
 	.video_boxa img{
 		width: 100%;
 		min-height: 100%;
@@ -493,7 +632,7 @@ color: white;
 	}
 	.iphone_s_box{
 		 width: 8.72rem;
-		 height: 7.626666rem;
+		 height: 8.626666rem;
 		 margin: 3.373333rem auto;
 		 background: white;
 		 border-radius:0.266666rem;
@@ -551,7 +690,12 @@ color: white;
 		left: 0;
 		height: 100%;
 	}
-	
+	.btn_box div p{
+		font-size:0.426666rem;
+		position: absolute;
+		top: 0;
+		right: 0.36rem;
+	}
 	.btn_box div{
 		width: 4.133333rem;
 		height: 100%;
@@ -560,6 +704,7 @@ color: white;
 		line-height: 0.96rem;
 		font-size: 0.426666rem;
 		color: white;
+		position: relative;
 	}
 	.btn_box{
 		 width: 8.72rem;
@@ -576,6 +721,8 @@ color: white;
 		line-height: 0.66rem;
 		text-align:justify;
 		padding-bottom:0.4rem;
+		
+		word-break:break-all;white-space:normal
 	}
 	.video_1_box_c2_cq{
 		width: 100%;
@@ -583,6 +730,9 @@ color: white;
 		border-bottom: 0.053333rem solid #D6F1FF;
 		font-size: 0.426666rem;
 		font-weight: 600;
+		overflow: hidden;
+                        text-overflow:ellipsis;
+                        white-space: nowrap;
 	}
 	.video_1_box_c2{
 		width: 9.36rem;

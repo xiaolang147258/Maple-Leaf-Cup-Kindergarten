@@ -18,27 +18,36 @@
      	  	  <div v-if="hel_tab_sw==0">
      	  	  	 <div class="git_video_box">
      	  	  	 	   <p class="video_p">上传视频</p>
+     	  	  	 	   
      	  	  	 	   <div class="video_img">
      	  	  	 	   	 <div @click="video_c" v-show="bofang_sw" class="bofang"><img style="width:50%;height:50%;" src="../../../static/img/upimg/bofang.png"/></div>
      	  	  	 	   	 <img :src="video_img_url" alt="" />
-     	  	  	 	     <input class="inp_video"  type="file" accept="video/*"  @change="onFileChange" >
+     	  	  	 	     <input class="inp_video"  type="file" accept="video/*"  @change="onFileChange">
      	  	  	 	   </div>
+     	  	  	 	   <p  class="video_p" style="font-size:0.32rem;margin-left:0.4rem;">*小于100M的视频*</p>
      	  	  	 	   <div v-show="bofang_sw" @click="del_video" class="video_san">删除视频</div>
      	  	  	 	<!--播放视频组件------------------------------------------------> 
      	  	  	 	 <mu-fade-transition>
      	  	  	 	   <div @click="video_show=false" v-show="video_show" style="width:100%;height:100%;position:fixed;background:rgba(0,0,0,.5);z-index:300;top: 0;left: 0;">
      	  	  	 	  	  <mu-slide-top-transition>
-                         <video @click.stop class="video" v-show="video_show" ref="video" controls="controls"  webkit-playsinline='true' playsinline='true'></video>
+                         <video @click.stop class="video" v-show="video_show" ref="video" :src="video_url" controls="controls"  webkit-playsinline='true' playsinline='true'></video>
                      </mu-slide-top-transition>   
      	  	  	 	   </div>
                  </mu-fade-transition>  
 
              <!--进度条-->
                   <van-popup v-model="show">
-                  	   <div class="logins"><div :style="{width:progress+'%'}" class="loginss"><div>{{progress}}%</div></div></div>
+                  	   <!--<div class="logins"><div :style="{width:progress+'%'}" class="loginss"><div>{{progress}}%</div></div></div>-->
+                  	   <van-circle
+                    	   v-model="currentRate"
+                    	   :rate="progress"
+                    	   :speed="100"
+                    	   :text="text"
+                    	   color="#4DB1E5"
+                    	   :stroke-width='60'
+                  	   />
                   </van-popup>	   	   
                   	   
-                  
                 <!--------------------------------------------------------->  
      	  	  	 </div>
      	  	  	 
@@ -63,13 +72,13 @@
      	  	  	 <!--标题-->
      	  	  	 <div class="title">
      	  	  	 	   <p class="video_p" style="margin: 0;">视频标题</p>  
-     	  	  	 	   <input @blur="to_top" v-model="inp_val" type="text" id="inp" placeholder="起个好玩的名字吧～" />
+     	  	  	 	   <input @blur="to_top" v-model="inp_val" type="text" maxlength="20" id="inp" placeholder="起个好玩的名字吧（少于20字）～" />
      	  	  	 </div>
      	  	  	 
      	  	  	 <div class="title_val">
      	  	  	 	  <p class="video_p" style="margin: 0;">视频内容</p>
      	  	  	 	  <div class="text_box">
-     	  	  	 	  	<textarea @blur="to_top" v-model="text_val" maxlength="300" class="texta" placeholder="介绍下你的视频吧，可以为你的视频吸引人气哦～"></textarea>
+     	  	  	 	  	<textarea @blur="to_top" v-model="text_val" maxlength="300" class="texta" placeholder="介绍下你的视频吧（至少6个字）～"></textarea>
      	  	  	 	  	<p>{{text_val.length}}/300</p>
      	  	  	 	  </div>
      	  	  	 </div>
@@ -133,6 +142,14 @@
           	 	   <p class="iphone_s_box_p">释放孩子们独特的魅力吧～</p><img class="iphone_s_box_img" src="../../../static/img/upimg/haizi.png" alt="" />
           	 	   <input v-model="names" @blur="to_top" class="iphone_s_box_inp" type="text" placeholder="请填写您的姓名" />
           	 	   <input v-model="iphones" style="margin-top:0.266666rem;" @blur="to_top" class="iphone_s_box_inp" type="number" pattern="\d*" name="number" placeholder="请输入手机号" />
+          	     
+          	     <!--<div class="yancss">
+          	     	  <input type="number" maxlength="8" placeholder="请输入验证码" />
+          	     	  <button v-if="yan_btn_show" class="yan_btn">获取验证码</button>
+          	     	  <button v-else class="yan_btn_no">获取验证码</button>
+          	     </div>-->
+          	     
+          	     
           	     <div class="iphone_s_box_p_box"><img src="../../../static/img/upimg/tishi.png"/><p>首次上传视频需完善个人信息</p></div>
           	     <div class="btn_boxs">
           	     	   <div @click="kaolv" style="background:rgba(255,223,99,1);float:left;color:#666666;" class="btn_boxsbtn">考虑一下</div>
@@ -196,6 +213,12 @@ export default {
   
   data(){
     return {
+    	yan_btn_show:true,
+    	
+    	video_url:'',
+    	
+    	currentRate:0,
+    	
     	show5_s:true,
     	
     	show1s:false,
@@ -244,18 +267,24 @@ export default {
     	 xinxi:0,
     }
   },
+   computed: {
+    text() {
+      return this.currentRate.toFixed(0) + '%'
+    }
+  },
   methods:{
+  	
   	video_c(){
-  		 this.video_show=true;
-  		 var ver = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-	     ver = parseInt(ver[1], 10)
-       console.log(ver,'ios系统')
-       if(Number(ver)<11){
-       	   this.$toast({
-        	        message:'您的系统版本低于iOS11，如果无法播放视频，建议升级系统至iOS11以上即可',
-        	        duration:10000
-        	  });
-       }
+		   this.video_show=true;
+//		 var ver = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+//	     ver = parseInt(ver[1], 10)
+//     console.log(ver,'ios系统')
+//     if(Number(ver)<11){
+//     	   this.$toast({
+//      	        message:'您的系统版本低于iOS11，如果无法播放视频，建议升级系统至iOS11以上即可',
+//      	        duration:10000
+//      	  });
+//     }
    },
   	
   	kaolv(){
@@ -469,7 +498,7 @@ export default {
       window.scrollTo(0,0);  
   	},
   	que_click(){//确认上传
-		 if(this.video_file!=''&&this.saiqu!='请选择赛区'&&this.xiaoqu!='请选择校区'&&this.video_img_file!=''&&this.inp_val!=''&&this.text_val!=''){
+		 if(this.video_file!=''&&this.saiqu!='请选择赛区'&&this.xiaoqu!='请选择校区'&&this.video_img_file!=''&&this.inp_val!=''&&this.text_val!=''&&this.inp_val.length>5&&this.text_val.length>5){
          this.show1s = true
          axios({
             method:"post",
@@ -489,9 +518,7 @@ export default {
             	    if(res.status = 200){
         	    	 	  if(res.data.status==108||res.data.status==107){//检测未登录/登录过期
         	    	 	  	  localStorage.token = '';
-        	    	 	  	  router.push({
-	   	                    path:'./home',
-	                    });
+        	    	 	  	  router.push({path:'./home'});
         	    	 	  }else if(res.data.status==0){//添加视频成功
         	    	 	  	  console.log(res.data);
         	    	 	  	  this.show1s = false;
@@ -502,10 +529,12 @@ export default {
         	    	 	  	  this.inp_val='';
         	    	 	  	  this.text_val='';
         	    	 	  	  this.hel_click(1);
-        	    	 	  }else{
-        	    	 	  	  this.$toast({message:'网络错误',duration:3000});
+        	    	 	  }else if(res.data.status==100){
+        	    	 	  	  this.$toast({message:'信息不能为空',duration:3000});
         	    	 	  	  console.log(res)
-        	    	 	  	  
+        	    	 	  }else{
+        	    	 	  	  this.$toast({message:'发生错误',duration:3000});
+        	    	 	  	  console.log(res)
         	    	 	  }
         	    	 }  
              }).catch(err=>{
@@ -515,7 +544,7 @@ export default {
          
 		 }else{
 		 	  this.$toast({
-        	      message:'请先完善信息',
+        	      message:'请完善信息，标题和内容长度必须大于五个字',
         	      duration:1000
         	  });
 		  }
@@ -564,12 +593,11 @@ export default {
   	
   	onRead(file){//确定选择图片
   		 console.log(file);
-  		 
+  		 this.show1s = true
   		 var aaa = new upload(file.file);
         aaa.setApi("/uploadVideo");
         aaa.setChunkCallBack(rs=>{
               console.log(rs,'1111');
-              this.show1s = true
         }).setFinishCallBack(res=>{
               if(res.status==200){
               	     console.log(res);
@@ -621,6 +649,8 @@ export default {
   		 this.$refs.video.src = '';
   	},
   	onFileChange(e){//穿入视频
+  		
+  		this.show1s = true
   		 var files = e.target.files || e.dataTransfer.files;
         if (!files.length) return;
         //视频上传
@@ -629,30 +659,31 @@ export default {
        let size =  files[0].size/1024;   
        console.log(size,'  视频大小');
        
-       if(size>=100000){
-       	    this.$toast({message:'视频大小不能超过100M',duration:2000}); 
+       if(size>1024000){
+       	    this.$toast({message:'视频大小不能超过1G',duration:2000}); 
        }else{
 //     	   let _this = this;
         var aaa = new upload(files[0]);
         aaa.setApi("/uploadVideo");
         aaa.setChunkCallBack(rs=>{
               console.log(rs,'1111');
+              this.show1s = false;
               this.show = true;
               this.progress = parseInt((rs.totalSize/files[0].size)*100);
               console.log(this.progress)
         }).setFinishCallBack(res=>{
               if(res.status==200){
-              	this.progress = 0;
-              	this.show = false;
-              	console.log(res)
+              	   console.log(res);
               	 //视频预览
               	   this.video_file = res.id;
                  	 this.$refs.video.src = 'http://video-vote.cieo.com.cn/'+res.path;
-//                 this.$refs.video.src = 'http://video-vote.cieo.com.cn/upload/2019-03-21/ns6nho0mw9i1553140198345Netscape7tjf4ehet9ce872b3b8be8ac09d7c879f92ae74219.mp4'
-                     
               	   this.bofang_sw = true;
-              	   
                    this.$toast({message:'上传成功',duration:1000});
+                   this.show = false;
+                   window.setTimeout(()=>{
+                 	      this.progress = 0;
+                   },500)
+                  
                   }
               });
           aaa.startUpload();
@@ -682,6 +713,46 @@ export default {
 </script>
 
 <style scoped>
+	.yan_btn_no{
+		width: 2.666666rem;
+		height: 100%;
+		float: left;
+		border-radius:0.133333rem;
+		font-size: 0.373333rem;
+		line-height: 1.013333rem;
+		background:#DEDEDE;
+		color:white;
+		margin-left:0.266666rem;
+		border: none;
+	}
+	.yan_btn{
+		width: 2.666666rem;
+		height: 100%;
+		float: left;
+		border-radius:0.133333rem;
+		font-size: 0.373333rem;
+		line-height: 1.013333rem;
+		background: #FFDF63;
+		color: #666666;
+		margin-left: 0.266666rem;
+	}
+	.yancss input{
+		float: left;
+		width: 3.5rem;
+		height: 100%;
+		border: none;
+		background: #F0F0F0;
+		border-radius:0.133333rem;
+		font-size: 0.373333rem;
+		line-height: 1.013333rem;
+		/*padding-left: 0.266666rem;*/
+		text-align: center;
+	}
+	.yancss{
+		width: 100%;
+		height: 1.013333rem;
+		margin-top: 0.266666rem;
+	}
 	.ppps{
 		 width: 5.973333rem;
 		 height: 1.333333rem;
@@ -830,8 +901,8 @@ color: white;
 		color: #4DB1E5;
 	}
 	.iphone_s_box{
-		 width: 8.72rem;
-		 height: 7.626666rem;
+		 width:8.72rem;
+		 height:8.626666rem;
 		 margin: 3.373333rem auto;
 		 background: white;
 		 border-radius:0.266666rem;
@@ -1051,7 +1122,7 @@ line-height: 0.48rem;
 	}
 	.title_val{
 		width: 7.333333rem;
-		height: 2.093333rem;
+		height: 3.093333rem;
 		margin: 0.32rem auto;
 		
 	}
@@ -1064,11 +1135,13 @@ line-height: 0.48rem;
 		 font-size:0.373333rem;
 		 padding-left:0.266666rem;
 		 line-height:1.013333rem;
+		 
 	}
 	.title{
 		 width: 7.333333rem;
 		 height: 1.013333rem;
 		 margin: 0 auto;
+		 line-height: 1.013333rem;
 	}
 	#x_s{
 		 width:0.4rem;
@@ -1121,7 +1194,7 @@ line-height: 0.48rem;
 		   background:greenyellow;
 		   border-radius:0.133333rem;
 		   margin-left: 0.4rem;
-		   margin-top: 0.766666rem;
+		   margin-top: 0.306666rem;
 	}
 	.video{
 		width:100%;
