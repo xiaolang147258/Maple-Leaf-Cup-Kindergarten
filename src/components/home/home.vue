@@ -19,8 +19,6 @@
            <div class="swiper-pagination"></div>
       </div>
       
-      
-      
       <div class="img_box"><img src="../../../static/img/laba.png" alt="" />
          <p v-if="isEnd==false">活动倒计时：<a>{{shi.d}}</a>天<a>{{shi.h}}</a>时<a>{{shi.m}}</a>分<a>{{shi.s}}</a>秒</p>
          <p v-else>活动已结束</p>
